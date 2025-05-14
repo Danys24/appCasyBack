@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import {consultarUsuarios,crearUser} from '../controllers/user.controller.js'
+import {consultarUsuarios,crearUser,verificarUsuario} from '../controllers/user.controller.js'
 
 
 // Datos simulados (en memoria)
@@ -47,6 +47,25 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Error al crear usuario' });
   }
 
+});
+
+//POST/login
+router.post('/login', async (req, res) => {
+  const { usuario, clave } = req.body;
+
+  if (!usuario || !clave) {
+    return res.status(400).json({ error: 'Faltan datos' });
+  }
+
+  // Verifica contra la base de datos
+  const resultado = await verificarUsuario(usuario, clave);
+  
+  if (!resultado) {
+    return res.status(401).json({ error: 'Credenciales incorrectas' });
+  }
+
+
+  res.json({ mensaje: 'Login exitoso', usuario: resultado});
 });
 
 // PUT /users/:id - Actualizar usuario

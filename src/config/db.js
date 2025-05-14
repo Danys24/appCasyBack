@@ -54,3 +54,16 @@ export function crearUsuario(tabla,usuario,clave){
         })
     })
 }
+
+export function verificarUser(tabla,usuario,clave){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE usuario=? and clave=?`,[usuario,clave], (error, result) => {
+            if(error) return reject(error);
+            if (result.length > 0) {
+                resolve(result[0]); // usuario encontrado
+            } else {
+                resolve(null); // usuario no encontrado
+            }
+        })
+    })
+}
