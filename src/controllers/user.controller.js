@@ -1,15 +1,64 @@
-import {todos, crearUsuario, verificarUser} from "../config/db.js";
+import {todosUsuarios,crearUsuario, verificarUser} from '../models/usuariosModel.js';
 
 const TABLA = 'users';
+const TABLAU = 'usuarios';
 
-export const consultarUsuarios = () => {
-    return todos(TABLA)
+export const obtenerTodosUsuarios = async(req, res) => {
+    try{
+        const usuarios = await todosUsuarios(TABLAU);
+        res.json(usuarios)
+    }catch{
+        res.status(500).json({ error: 'Error al obtener los usuarios' });
+    }
 }
 
-export const crearUser = (usuario, clave) => {
-    return crearUsuario(TABLA,usuario,clave)
+export const obtenerUnUsuario = async(req, res) => {
+    try{
+        const usuarios = await todosUsuarios(TABLAU);
+        const usuario = usuarios.find(u => u.id === parseInt(req.params.id));
+        usuario ? res.json(usuario) : res.status(404).send('Usuario no encontrado');
+    }catch{
+        res.status(500).json({ error: 'Error al obtener el usuario' });
+    }
 }
 
-export const verificarUsuario = (usuario, clave) => {
-    return verificarUser(TABLA,usuario,clave)
+export const crearUsuarios = async(req, res) => {
+
+    const {idRol, nombre, clave} = req.body;
+
+    if (!idRol || !nombre || !clave) {
+    return res.status(400).send('Faltan datos');
+    }
+
+    try{
+        const usuarios = await crearUsuario(TABLAU, idRol, nombre, clave);
+        res.status(201).json({ mensaje: 'Usuario creado correctamente', nombre });
+    }catch{
+        console.error('Error al crear usuario:', err);
+        res.status(500).json({ error: 'Error al crear usuario' });
+    }
+}
+
+
+export const verificarUsuario = async (req, res) => {
+    try{
+        const { nombre, clave } = req.body;
+
+        if (!nombre || !clave) {
+            return res.status(400).json({ error: 'Faltan datos' });
+        }
+
+        // Verifica contra la base de datos
+        const resultado = await verificarUser(TABLAU, nombre, clave);
+        
+        if (!resultado) {
+            return res.status(401).json({ error: 'Usuario o Clave incorrecta' });
+        }
+
+
+        res.json({ mensaje: 'Inicio de sesion exitoso', nombre: resultado});
+
+    }catch{
+        res.status(500).json({ error: 'Error al comparar nombre y clave' });
+    }
 }

@@ -11,7 +11,7 @@ const dbConfig = {
     port : configuracion.mysql.port
 }
 
-let conexion;
+export let conexion;
 
 function conMysql(){
     conexion = mysql.createConnection(dbConfig);
@@ -36,34 +36,3 @@ function conMysql(){
 }
 
 conMysql();
-
-export function todos(tabla){
-    return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla}`, (error, result) => {
-            if(error) return reject(error);
-            resolve(result);
-        })
-    })
-}
-
-export function crearUsuario(tabla,usuario,clave){
-    return new Promise( (resolve, reject) => {
-        conexion.query(`INSERT INTO ${tabla}(usuario, clave) values(?,?)`,[usuario,clave], (error, result) => {
-            if(error) return reject(error);
-            resolve(result);
-        })
-    })
-}
-
-export function verificarUser(tabla,usuario,clave){
-    return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla} WHERE usuario=? and clave=?`,[usuario,clave], (error, result) => {
-            if(error) return reject(error);
-            if (result.length > 0) {
-                resolve(result[0]); // usuario encontrado
-            } else {
-                resolve(null); // usuario no encontrado
-            }
-        })
-    })
-}
