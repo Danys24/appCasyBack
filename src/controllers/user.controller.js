@@ -1,4 +1,5 @@
 import {todosUsuarios,crearUsuario, verificarUser} from '../models/usuariosModel.js';
+import jwt from 'jsonwebtoken';
 
 const TABLA = 'users';
 const TABLAU = 'usuarios';
@@ -55,7 +56,9 @@ export const verificarUsuario = async (req, res) => {
             return res.status(401).json({ error: 'Usuario o Clave incorrecta' });
         }
 
+        const token = jwt.sign({id:resultado.id}, 'serna', { expiresIn: '1h' });
 
+        res.json({ token });
         res.json({ mensaje: 'Inicio de sesion exitoso', nombre: resultado});
 
     }catch{

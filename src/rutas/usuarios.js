@@ -1,7 +1,8 @@
 import express from 'express';
-const router = express.Router();
-import {crearUsuarios,verificarUsuario, obtenerTodosUsuarios, obtenerUnUsuario} from '../controllers/user.controller.js'
+import {crearUsuarios,verificarUsuario, obtenerTodosUsuarios, obtenerUnUsuario} from '../controllers/user.controller.js';
+import {authMiddleware} from '../middlewares/authmiddleware.js';
 
+const router = express.Router();
 
 // Datos simulados (en memoria)
 let users = [
@@ -10,14 +11,14 @@ let users = [
 ];
 
 //GET /usuarios - obtener todos los usuarios
-router.get('/', obtenerTodosUsuarios)
+router.get('/',authMiddleware,obtenerTodosUsuarios)
 
 
 // GET /users/:id - Obtener usuario por ID
-router.get('/:id', obtenerUnUsuario);
+router.get('/:id',authMiddleware,obtenerUnUsuario);
 
 // POST /users - Crear nuevo usuario
-router.post('/', crearUsuarios)
+router.post('/',authMiddleware,crearUsuarios)
 
 // PUT /users/:id - Actualizar usuario
 router.put('/:id', (req, res) => {

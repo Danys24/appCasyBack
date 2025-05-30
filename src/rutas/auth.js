@@ -1,6 +1,8 @@
 import express from 'express';
+import {verificarUsuario} from '../controllers/user.controller.js';
+import {authMiddleware} from '../middlewares/authmiddleware.js';
+
 const routerAuth = express.Router();
-import {verificarUsuario} from '../controllers/user.controller.js'
 
 //POST/login
 routerAuth.post('/', verificarUsuario);
