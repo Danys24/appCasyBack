@@ -33,7 +33,7 @@ export const crearUsuarios = async(req, res) => {
 
     try{
         const usuarios = await crearUsuario(TABLAU, idRol, nombre, clave);
-        res.status(201).json({ mensaje: 'Usuario creado correctamente', nombre });
+        res.status(201).json({ mensaje: 'Usuario creado correctamente', usuario: usuarios});
     }catch{
         console.error('Error al crear usuario:', err);
         res.status(500).json({ error: 'Error al crear usuario' });
@@ -59,7 +59,7 @@ export const verificarUsuario = async (req, res) => {
         const token = jwt.sign({id:resultado.id}, 'serna', { expiresIn: '1h' });
 
         res.json({ token });
-        res.json({ mensaje: 'Inicio de sesion exitoso', nombre: resultado});
+        //res.json({ mensaje: 'Inicio de sesion exitoso', nombre: resultado});
 
     }catch{
         res.status(500).json({ error: 'Error al comparar nombre y clave' });

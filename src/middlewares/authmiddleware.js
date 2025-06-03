@@ -13,6 +13,7 @@ export const authMiddleware = (req, res, next) => {
 
         const payload = jwt.verify(token, 'serna');
         req.nombre = payload;
+        req.usuarioId = payload.id;
         next();
 
     } catch (err) {
