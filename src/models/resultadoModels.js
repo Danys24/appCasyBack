@@ -32,9 +32,14 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evi
     })
 }
 
-export function resultsByIdCasoCiclo(tabla, idCaso, idCiclo){
+export function resultsByIdCasoCiclo(tabla,tablae, idCaso, idCiclo){
     return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla} WHERE id_caso= ? AND id_ciclo= ?`,[idCaso, idCiclo], (error, result) => {
+        const querys = `SELECT r.observacion,JSON_ARRAYAGG(e.evidencia) as evidencia,r.estado 
+                        FROM ${tabla} as r 
+                        JOIN LEFT ${tablae} as e ON r.id = e.id_resultado
+                        WHERE id_caso= ? AND id_ciclo= ?
+                        GROUP BY r.id`
+        conexion.query(querys,[idCaso, idCiclo], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })

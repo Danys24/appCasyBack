@@ -28,8 +28,15 @@ export const crearResultadoPrueba = async(req, res) => {
 
 export const obtenerResultadosByIdCasoCiclo = async(req, res) => {
     try{
-        const resultado = await casosByIdSet(TABLAS, req.params.idCaso, req.params.idCiclo);
-        res.json(resultado);
+        const resultado = await casosByIdSet(TABLAS,TABLAE, req.params.idCaso, req.params.idCiclo);
+
+        const datosConURL = resultado.map(r => ({
+            ...r,
+            url_evidencia: r.evidencia
+                ? `http://localhost:3000/imagenes/${r.ruta_evidencia}`
+                : null
+        }));
+        res.json(datosConURL);
     }catch{
         res.status(500).json({ error: 'Error al obtener los resultados de prueba' });
     }
