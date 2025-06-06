@@ -26,16 +26,16 @@ export const crearResultadoPrueba = async(req, res) => {
     }
 }
 
-export const obtenerCasosByIdSet = async(req, res) => {
+export const obtenerResultadosByIdCasoCiclo = async(req, res) => {
     try{
-        const casos = await casosByIdSet(TABLAS, req.params.id);
-        res.json(casos);
+        const resultado = await casosByIdSet(TABLAS, req.params.idCaso, req.params.idCiclo);
+        res.json(resultado);
     }catch{
-        res.status(500).json({ error: 'Error al obtener los casos de prueba' });
+        res.status(500).json({ error: 'Error al obtener los resultados de prueba' });
     }
 }
 
-export const obtenerUnCaso = async(req, res) => {
+export const obtenerUnResultado = async(req, res) => {
     try{
         const caso = await casoById(TABLAS, req.params.id);
         caso ? res.json(caso) : res.status(404).send('Caso no encontrado');

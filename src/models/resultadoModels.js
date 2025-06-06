@@ -32,9 +32,9 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evi
     })
 }
 
-export function resultsByIdCasoCiclo(tabla, idSet){
+export function resultsByIdCasoCiclo(tabla, idCaso, idCiclo){
     return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla} WHERE id_set = ?`,[idSet], (error, result) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE id_caso= ' AND id_ciclo= ?`,[idCaso, idCiclo], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })
