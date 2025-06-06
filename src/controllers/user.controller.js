@@ -1,8 +1,9 @@
-import {todosUsuarios,crearUsuario, verificarUser} from '../models/usuariosModel.js';
+import {todosUsuarios,crearUsuario, verificarUser, usuariosByIdProyecto} from '../models/usuariosModel.js';
 import jwt from 'jsonwebtoken';
 
 const TABLA = 'users';
 const TABLAU = 'usuarios';
+const TABLAR = 'usuario_proyecto';
 
 export const obtenerTodosUsuarios = async(req, res) => {
     try{
@@ -63,5 +64,21 @@ export const verificarUsuario = async (req, res) => {
 
     }catch{
         res.status(500).json({ error: 'Error al comparar nombre y clave' });
+    }
+}
+
+export const usuarioByIdProyecto = async (req, res) => {
+    try{
+
+        const resultado = await usuariosByIdProyecto(TABLAU, TABLAR, req.params.id);
+        
+        if (resultado.length === 0) {
+            return res.status(401).json({ error: 'los usuarios no se encontraron' });
+        }
+
+        res.json(resultado)
+
+    }catch{
+        res.status(500).json({ error: 'Error al obtener los usuarios' });
     }
 }

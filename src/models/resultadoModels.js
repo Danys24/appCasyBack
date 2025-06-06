@@ -1,37 +1,38 @@
 import {conexion} from '../config/db.js';
 
-export function crearCaso(tablas, idSet, nombre, descripcion, estado, responsable){
+export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evidencia, estado){
 
     return new Promise((resolve, reject) =>{
         
-        conexion.query(`SELECT COALESCE(MAX(orden), 0) AS maxOrden FROM ${tablas} WHERE id_set = ?`, 
-            [idSet], 
+        conexion.query(`INSERT INTO ${tablas}(idPaso, idCiclo, observacion, estado) VALUES(?,?,?,?)`, 
+            [idPaso, idCiclo, observacion,estado], 
             (error, result) => {
 
                 if(error) return reject(error);
 
-                const nuevoOrden = result[0].maxOrden + 1;
+                const idResultado = result.insertId;
 
-                conexion.query(`INSERT INTO ${tablas}(id_set, nombre, descripcion, estado, responsable, orden) VALUES(?,?,?,?,?,?)`,
-                    [idSet, nombre, descripcion, estado, responsable,nuevoOrden],
-                    (error1, result1) => {
-                        if(error1) return reject(error1);
-                        resolve({
-                            idSet:idSet, 
-                            nombre:nombre, 
-                            descripcion:descripcion, 
-                            estado:estado, 
-                            responsable:responsable,
-                            orden:nuevoOrden
-                        })
-                    }
-                )
+                for(const img of evidencia){
+                    conexion.query(`INSERT INTO ${tablae}(id_resultado, evidencia) VALUES(?,?)`,
+                        [idResultado, img],
+                        (error1, result1) => {
+                            if(error1) return reject(error1);
+                        }
+                    )
+                }
+
+                resolve({
+                    idPaso: idPaso, 
+                    idCiclo: idCiclo, 
+                    observacion: observacion, 
+                    estado:estado
+                })
             }
         )
     })
 }
 
-export function casosByIdSet(tabla, idSet){
+export function resultsByIdCasoCiclo(tabla, idSet){
     return new Promise( (resolve, reject) => {
         conexion.query(`SELECT * FROM ${tabla} WHERE id_set = ?`,[idSet], (error, result) => {
             if(error) return reject(error);

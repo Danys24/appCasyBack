@@ -1,41 +1,27 @@
 import {conexion} from '../config/db.js';
 
-export function crearSet(tablas, tablar, nombre, descripcion, estado,idUsuario){
+export function crearSet(tablas, idProyecto, nombre, descripcion, estado){
     return new Promise( (resolve, reject) => {
 
-        conexion.beginTransaction(error => {
+        conexion.query(`INSERT INTO ${tablas}(id_proyecto, nombre, descripcion, estado) VALUES(?,?,?,?)`,[idProyecto, nombre, descripcion, estado], (error, result) => {
             if (error) return reject(error);
-
-            conexion.query(`INSERT INTO ${tablas}(nombre, descripcion, estado) VALUES(?,?,?)`,[nombre, descripcion, estado], (error1, result) => {
-                if(error1){
-                    return conexion.rollback(() => reject(error1));
-                } 
-
-                //Se guarda en una variable el id del registro insertado en la tabla
-                //esto solo funciona cuando el id de la tabla fue credo con la propiedad AUTO_INCREMENT
-                const idSet = result.insertId;
-
-                conexion.query(`INSERT INTO ${tablar}(id_usuario, id_set) VALUES (?, ?)`, [idUsuario, idSet], (error2, result2) => {
-                    if (error2) {
-                        return conexion.rollback(() => reject(error2));
-                    }
-
-                    conexion.commit(commitError => {
-                        if (commitError) {
-                        return conexion.rollback(() => reject(commitError));
-                        }
-                        resolve({ nombre: nombre, descripcion: descripcion, estado: estado, idUsuario: idUsuario, idSet: idSet });
-                    });
-                })
-            })
+            resolve({idProyecto:idProyecto, nombre:nombre, descripcion:descripcion, estado:estado});
         })
-            
     })
 }
 
-export function todosSets(tabla){
+export function setsByIdProyecto(tabla, idProyecto){
     return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla}`, (error, result) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE id_proyecto = ?`,[idProyecto], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
+export function setsById(tabla, idCiclo){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE id = ?`,[idCiclo], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })
@@ -57,6 +43,15 @@ export function eliminarSet(tabla,idSet){
         conexion.query(`DELETE FROM ${tabla} WHERE id=?`,[idSet] ,(error, result) => {
             if(error) return reject(error);
             resolve(result);
+        })
+    })
+}
+
+export function setConCiclo(tabla,idSet, idCiclo){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`INSERT INTO ${tabla}(id_set,id_ciclo) VALUES (?,?)`,[idSet,idCiclo] ,(error, result) => {
+            if(error) return reject(error);
+            resolve({idSet:idSet, idCiclo:idCiclo});
         })
     })
 }

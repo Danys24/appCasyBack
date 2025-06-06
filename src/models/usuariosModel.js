@@ -30,3 +30,18 @@ export function verificarUser(tabla,nombre,clave){
         })
     })
 }
+
+export function usuariosByIdProyecto(tablau, tablar, idProyecto){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `
+            SELECT u.nombre FROM ${tablar} as r
+            JOIN ${tablau} as u ON r.id_usuario = u.id
+            WHERE id_proyecto = ?
+        `
+        conexion.query(querys,[idProyecto], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}

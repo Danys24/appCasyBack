@@ -1,27 +1,28 @@
-import {crearCaso,casosByIdSet,casoById,actualizarCasoById, eliminarCasoById, ordenarCasoByIdSet, casoConCiclo} from '../models/casosModel.js';
+import {crearResultado} from '../models/resultadoModels.js';
 
-const TABLAS = 'caso_prueba';
-const TABLAR = "relacion_caso_ciclo";
+const TABLAS = 'resultado_paso_prueba';
+const TABLAE = "evidencias";
 
-export const crearCasoPrueba = async(req, res) => {
+export const crearResultadoPrueba = async(req, res) => {
     try{
-        const { idSet, nombre, descripcion, estado, responsable } = req.body;
+        const { idPaso, idCiclo, observacion, estado } = req.body;
+        const imagenes = req.files; //Array de archivos
 
-        if (!idSet || !nombre || !descripcion || !estado || !responsable) {
+        if (!idPaso || !idCiclo || !observacion || !estado) {
             return res.status(400).json({ error: 'Faltan valores por ingresar' });
         }
 
-        const caso = await crearCaso(TABLAS, idSet, nombre, descripcion, estado, responsable);
+        const resultado = await crearResultado(TABLAS,TABLAE, idPaso, idCiclo, observacion, imagenes,estado);
 
-        if (!caso) {
+        if (!resultado) {
             //return res.status(401).json({ error: 'El set no se ha creado' });
         }
 
-        res.status(201).json({mensaje: 'caso de prueba creado', caso: caso});
+        res.status(201).json({mensaje: 'resultado de prueba creado', resultado: resultado});
 
     }catch (error){
-        console.error('Error al crear el caso:', error);
-        res.status(500).json({ error: 'Error al crear un caso de prueba' });
+        console.error('Error al crear el resultado:', error);
+        res.status(500).json({ error: 'Error al crear un resultado de prueba' });
     }
 }
 
