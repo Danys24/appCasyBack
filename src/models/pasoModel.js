@@ -4,7 +4,7 @@ export function crearPaso(tablas, idCaso, paso, resultado){
 
     return new Promise((resolve, reject) =>{
         
-        conexion.query(`SELECT COALESCE(MAX(orden), 0) AS maxOrden FROM ${tablas} WHERE id_set = ?`, 
+        conexion.query(`SELECT COALESCE(MAX(orden), 0) AS maxOrden FROM ${tablas} WHERE id_caso = ?`, 
             [idCaso], 
             (error, result) => {
 
@@ -77,7 +77,7 @@ export function ordenarPasoByIdCaso(tabla,idCaso){
         conexion.query(`SET @orden = 0`,(error, result) => {
             if(error) return reject(error);
 
-            conexion.query(`UPDATE ${tabla}  SET orden = (@orden := @orden + 1) WHERE id_set = ? ORDER BY orden ASC`,
+            conexion.query(`UPDATE ${tabla}  SET orden = (@orden := @orden + 1) WHERE id_caso = ? ORDER BY orden ASC`,
                 [idCaso],
                 (error1, result1) => {
                     if(error1) return reject(error1);

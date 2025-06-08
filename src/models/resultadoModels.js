@@ -4,7 +4,7 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evi
 
     return new Promise((resolve, reject) =>{
         
-        conexion.query(`INSERT INTO ${tablas}(idPaso, idCiclo, observacion, estado) VALUES(?,?,?,?)`, 
+        conexion.query(`INSERT INTO ${tablas}(id_paso, id_ciclo, observacion, estado) VALUES(?,?,?,?)`, 
             [idPaso, idCiclo, observacion,estado], 
             (error, result) => {
 
@@ -14,41 +14,40 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evi
 
                 for(const img of evidencia){
                     conexion.query(`INSERT INTO ${tablae}(id_resultado, evidencia) VALUES(?,?)`,
-                        [idResultado, img],
+                        [idResultado, img.filename],
                         (error1, result1) => {
                             if(error1) return reject(error1);
+                            resolve({
+                                idPaso:idPaso,
+                                idCiclo:idCiclo,
+                                observacion:observacion,
+                                estado, estado
+                            })
                         }
                     )
                 }
-
-                resolve({
-                    idPaso: idPaso, 
-                    idCiclo: idCiclo, 
-                    observacion: observacion, 
-                    estado:estado
-                })
             }
         )
     })
 }
 
-export function resultsByIdCasoCiclo(tabla,tablae, idCaso, idCiclo){
+export function resultsByIdPasoCiclo(tabla,tablae, idpaso, idCiclo){
     return new Promise( (resolve, reject) => {
         const querys = `SELECT r.observacion,JSON_ARRAYAGG(e.evidencia) as evidencia,r.estado 
                         FROM ${tabla} as r 
-                        JOIN LEFT ${tablae} as e ON r.id = e.id_resultado
-                        WHERE id_caso= ? AND id_ciclo= ?
+                        LEFT JOIN ${tablae} as e ON r.id = e.id_resultado
+                        WHERE id_paso= ? AND id_ciclo= ?
                         GROUP BY r.id`
-        conexion.query(querys,[idCaso, idCiclo], (error, result) => {
+        conexion.query(querys,[idpaso, idCiclo], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })
     })
 }
 
-export function casoById(tabla, idCaso){
+export function resultadoById(tabla, idResultado){
     return new Promise( (resolve, reject) => {
-        conexion.query(`SELECT * FROM ${tabla} WHERE id = ?`,[idCaso], (error, result) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE id = ?`,[idResultado], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })
@@ -56,53 +55,46 @@ export function casoById(tabla, idCaso){
 }
 
 
-export function actualizarCasoById(tabla,nombre,descripcion,estado,responsable,idCaso){
+export function actualizarResultadoById(tabla,observacion, estado,idResultado){
     return new Promise( (resolve, reject) => {
-        conexion.query(`UPDATE ${tabla} SET nombre=?, descripcion=?, estado=?, responsable =? WHERE id=?`,
-            [nombre,descripcion,estado,responsable,idCaso], 
+        conexion.query(`UPDATE ${tabla} SET observacion=?, estado=?  WHERE id=?`,
+            [observacion, estado,idResultado], 
             (error, result) => {
             if(error) return reject(error);
             resolve({
-                id:idCaso,
-                nombre:nombre,
-                descripcion:descripcion,
-                estado:estado,
-                responsable:responsable
+                id:idResultado,
+                observacion:observacion,
+                estado:estado
             });
         })
     })
 }
 
-export function eliminarCasoById(tabla,idCaso, idSet){
+export function crearEvidencia(tablae,idResultado, evidencia){
     return new Promise( (resolve, reject) => {
-        conexion.query(`DELETE FROM ${tabla} WHERE id=?`,[idCaso] ,(error, result) => {
+        for(const img of evidencia){
+            conexion.query(`INSERT INTO ${tablae}(id_resultado, evidencia) VALUES(?,?)`,
+                        [idResultado, img.filename],
+                        (error, result) => {
+                            if(error) return reject(error);
+                            resolve(result);
+                        }
+            )
+
+        }
+    })
+}
+
+export function eliminarEvidenciaById(tablae,idEvidencia){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`DELETE FROM ${tablae}  WHERE id=?`,
+            [idEvidencia], 
+            (error, result) => {
             if(error) return reject(error);
-            resolve(result);   
+            resolve(result);
         })
     })
 }
 
-export function ordenarCasoByIdSet(tabla,idSet){
-    return new Promise( (resolve, reject) => {
-        conexion.query(`SET @orden = 0`,(error, result) => {
-            if(error) return reject(error);
 
-            conexion.query(`UPDATE ${tabla}  SET orden = (@orden := @orden + 1) WHERE id_set = ? ORDER BY orden ASC`,
-                [idSet],
-                (error1, result1) => {
-                    if(error1) return reject(error1);
-                    resolve(result1);
-            })
-             
-        })
-    })
-}
 
-export function casoConCiclo(tabla,idCaso, idCiclo){
-    return new Promise( (resolve, reject) => {
-        conexion.query(`INSERT INTO ${tabla}(id_caso,id_ciclo) VALUES (?,?)`,[idCaso,idCiclo] ,(error, result) => {
-            if(error) return reject(error);
-            resolve({idCaso:idCaso, idCiclo:idCiclo});
-        })
-    })
-}
