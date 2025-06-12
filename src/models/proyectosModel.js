@@ -70,6 +70,20 @@ export function proyectosByIdProyectoTotal(tabla, tablar, idUsuario){
     })
 }
 
+export function proyectosByIdUsuario(tabla, tablar, idUsuario){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT p.id, p.nombre, p.descripcion FROM ${tabla} as p
+                        JOIN ${tablar} as r ON p.id = r.id_proyecto
+                        WHERE id_usuario = ?                  
+                        `
+        conexion.query(querys,[idUsuario], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
 export function actualizarProyecto(tabla,nombre,descripcion,idProyecto){
     return new Promise( (resolve, reject) => {
         conexion.query(`UPDATE ${tabla} SET nombre=?, descripcion=? WHERE id=?`,[nombre,descripcion,idProyecto], (error, result) => {

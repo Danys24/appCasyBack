@@ -1,4 +1,4 @@
-import {crearProyecto,todosProyectos,actualizarProyecto,eliminarProyecto,proyectosByIdProyecto, proyectosByIdProyectoTotal} from '../models/proyectosModel.js';
+import {crearProyecto,todosProyectos,actualizarProyecto,eliminarProyecto,proyectosByIdProyecto, proyectosByIdProyectoTotal, proyectosByIdUsuario} from '../models/proyectosModel.js';
 
 const TABLAS = 'proyectos';
 const TABLAR = 'usuario_proyecto';
@@ -54,6 +54,23 @@ export const obtenerProyectosByIdUsuario = async(req, res) => {
             page,
             limit
         });
+
+    }catch(error){
+        console.error("error al obtener los proyectos", error);
+        res.status(500).json({ error: 'Error al obtener los proyectos' });
+    }
+}
+
+export const obtenerProyectosByIdUsuarioTotal = async(req, res) => {
+    try{
+
+        const totalProyectos = await proyectosByIdUsuario(TABLAS,TABLAR, req.params.id);
+        
+        if(totalProyectos.length === 0){
+            return res.status(404).json({mensaje:'Proyectos no encontrados'});        
+        }
+
+        res.json(totalProyectos);
 
     }catch(error){
         console.error("error al obtener los proyectos", error);
