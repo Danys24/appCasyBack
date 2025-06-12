@@ -3,7 +3,7 @@ import {crearProyectos,obtenerTodosProyectos,obtenerUnProyecto,actualizarUnProye
 import {obtenerCiclosSetByIdProyecto} from '../controllers/ciclosSet.controller.js';
 import {obtenerCiclosCasosByIdProyecto} from '../controllers/ciclosCasos.controller.js';
 import {obtenerSetsByIdProyecto} from '../controllers/set.controller.js';
-import {usuarioByIdProyecto} from '../controllers/user.controller.js';
+import {usuarioByIdProyecto, usuarioByIdProyectoNoAsociados} from '../controllers/user.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
 
 const routerProyecto = express.Router();
@@ -25,6 +25,9 @@ routerProyecto.get('/:id/sets',authMiddleware,obtenerSetsByIdProyecto);
 
 //GET /Proyectos/:id/usuarios - obtener los usuarios por id del proyecto 
 routerProyecto.get('/:id/usuarios',authMiddleware,usuarioByIdProyecto);
+
+//GET /Proyectos/:id/usuarios - obtener los usuarios no asociados al id del proyecto 
+routerProyecto.get('/:id/usuariosNoAsociados',authMiddleware,usuarioByIdProyectoNoAsociados);
 
 //GET /proyectos/:id - obtener un proyecto por id
 routerProyecto.get('/:id',authMiddleware,obtenerUnProyecto);

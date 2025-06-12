@@ -1,4 +1,4 @@
-import {todosUsuarios,crearUsuario, verificarUser, usuariosByIdProyecto} from '../models/usuariosModel.js';
+import {todosUsuarios,crearUsuario, verificarUser, usuariosByIdProyecto, usuariosByIdProyectoNoRelacion,vincularUsuarioProyecto} from '../models/usuariosModel.js';
 import jwt from 'jsonwebtoken';
 
 const TABLA = 'users';
@@ -57,7 +57,7 @@ export const verificarUsuario = async (req, res) => {
             return res.status(401).json({ error: 'Usuario o Clave incorrecta' });
         }
 
-        const token = jwt.sign({id:resultado.id}, 'serna', { expiresIn: '1h' });
+        const token = jwt.sign({id:resultado.id, nombre:resultado.nombre}, 'serna', { expiresIn: '1h' });
 
         res.json({ token });
         //res.json({ mensaje: 'Inicio de sesion exitoso', nombre: resultado});
@@ -73,12 +73,47 @@ export const usuarioByIdProyecto = async (req, res) => {
         const resultado = await usuariosByIdProyecto(TABLAU, TABLAR, req.params.id);
         
         if (resultado.length === 0) {
-            return res.status(401).json({ error: 'los usuarios no se encontraron' });
+            return res.status(404).json({ error: 'los usuarios no se encontraron' });
         }
 
         res.json(resultado)
 
     }catch{
         res.status(500).json({ error: 'Error al obtener los usuarios' });
+    }
+}
+
+export const usuarioByIdProyectoNoAsociados = async (req, res) => {
+    try{
+
+        const resultado = await usuariosByIdProyectoNoRelacion(TABLAU, TABLAR, req.params.id);
+        
+        if (resultado.length === 0) {
+            return res.status(404).json({ error: 'los usuarios no se encontraron' });
+        }
+
+        res.json(resultado)
+
+    }catch{
+        res.status(500).json({ error: 'Error al obtener los usuarios' });
+    }
+}
+
+export const vincularUsuarioAProyecto = async (req, res) => {
+    try{
+
+        const {idUsuario, idProyecto} = req.body;
+
+        if (!idUsuario || !idProyecto ) {
+            return res.status(400).send('Faltan datos');
+        }
+
+        const resultado = await vincularUsuarioProyecto(TABLAR, idUsuario, idProyecto);
+        
+        res.status(201).json({ mensaje: 'Usuario vinculado al proyecto correctamente'});
+
+    }catch(err){
+        console.error('Error al vincular usuario:', err);
+        res.status(500).json({ error: 'Error al vincular usuario' });
     }
 }
