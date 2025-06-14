@@ -1,4 +1,4 @@
-import {setsByIdProyecto, setsById, crearSet, actualizarSet, eliminarSet, setConCiclo} from '../models/setModel.js';
+import {setsByIdProyecto, setsById, crearSet, actualizarSet, eliminarSet, setConCiclo,setByIdProyecto, setByIdProyectoTotal} from '../models/setModel.js';
 
 const TABLAS = 'set_prueba';
 const TABLAR = 'relacion_set_ciclo';
@@ -32,6 +32,32 @@ export const obtenerSetsByIdProyecto = async(req, res) => {
         res.json(sets)
     }catch{
         res.status(500).json({ error: 'Error al obtener los sets de prueba' });
+    }
+}
+
+export const obtenerSetsByIdProyectoPaginas = async(req, res) => {
+    try{
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const sets = await setByIdProyecto(TABLAS, req.params.id, limit, offset);
+
+        const totalSets = await setByIdProyectoTotal(TABLAS,req.params.id);
+
+        const total = totalSets[0].total;
+
+
+        res.json({
+            data:sets,
+            total,
+            page,
+            limit
+        });
+
+    }catch(error){
+        console.error("error al obtener los sets", error);
+        res.status(500).json({ error: 'Error al obtener los sets' });
     }
 }
 
