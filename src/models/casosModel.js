@@ -40,6 +40,32 @@ export function casosByIdSet(tabla, idSet){
     })
 }
 
+export function casosByIdSetPagina(tabla, idSet, limit, offset){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT * FROM ${tabla}
+                        WHERE id_set = ? ORDER BY id ASC LIMIT ? OFFSET ?                   
+                        `
+        conexion.query(querys,[idSet, limit, offset], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
+export function casosByIdSetTotal(tabla, idSet){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT COUNT(*) AS total FROM ${tabla}
+                        WHERE id_set = ?                  
+                        `
+        conexion.query(querys,[idSet], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
 export function casoById(tabla, idCaso){
     return new Promise( (resolve, reject) => {
         conexion.query(`SELECT * FROM ${tabla} WHERE id = ?`,[idCaso], (error, result) => {

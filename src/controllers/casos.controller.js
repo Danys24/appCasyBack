@@ -1,4 +1,4 @@
-import {crearCaso,casosByIdSet,casoById,actualizarCasoById, eliminarCasoById, ordenarCasoByIdSet, casoConCiclo} from '../models/casosModel.js';
+import {crearCaso,casosByIdSet,casoById,actualizarCasoById, eliminarCasoById, ordenarCasoByIdSet, casoConCiclo, casosByIdSetPagina, casosByIdSetTotal} from '../models/casosModel.js';
 
 const TABLAS = 'caso_prueba';
 const TABLAR = "relacion_caso_ciclo";
@@ -40,6 +40,32 @@ export const obtenerUnCaso = async(req, res) => {
         caso ? res.json(caso) : res.status(404).send('Caso no encontrado');
     }catch{
         res.status(500).json({ error: 'Error al obtener el caso' });
+    }
+}
+
+export const obtenerCasosByIdSetPaginas = async(req, res) => {
+    try{
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const casos = await casosByIdSetPagina(TABLAS, req.params.id, limit, offset);
+
+        const totalCaso = await casosByIdSetTotal(TABLAS, req.params.id);
+
+        const total = totalCaso[0].total;
+
+
+        res.json({
+            data:casos,
+            total,
+            page,
+            limit
+        });
+
+    }catch(error){
+        console.error("error al obtener los casos", error);
+        res.status(500).json({ error: 'Error al obtener los casos' });
     }
 }
 

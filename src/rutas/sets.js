@@ -1,6 +1,6 @@
 import express from 'express';
 import {crearSets,vincularSetConCiclo, obtenerUnSet,actualizarUnSet,eliminarUnSet} from '../controllers/set.controller.js';
-import {obtenerCasosByIdSet, ordenarCasos} from '../controllers/casos.controller.js';
+import {obtenerCasosByIdSet, ordenarCasos,obtenerCasosByIdSetPaginas} from '../controllers/casos.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
 
 const routerSets = express.Router();
@@ -10,6 +10,9 @@ routerSets.post('/',authMiddleware,crearSets);
 
 //GET /sets/:id/casos - obtener un caso por id set
 routerSets.get('/:id/casos',authMiddleware,obtenerCasosByIdSet);
+
+//GET /sets/:id/casosPaginas - obtener un caso por id set
+routerSets.get('/:id/casosPaginas',authMiddleware,obtenerCasosByIdSetPaginas);
 
 //PUT /sets/:id/casos - ordenar casos por id set
 routerSets.put('/:id/casos',authMiddleware,ordenarCasos);
