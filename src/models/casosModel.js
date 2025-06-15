@@ -118,9 +118,27 @@ export function ordenarCasoByIdSet(tabla,idSet){
     })
 }
 
-export function casoConCiclo(tabla,idCaso, idCiclo){
+export function casoConCiclo(tabla,idCaso, idCiclo, estado){
     return new Promise( (resolve, reject) => {
-        conexion.query(`INSERT INTO ${tabla}(id_caso,id_ciclo) VALUES (?,?)`,[idCaso,idCiclo] ,(error, result) => {
+        conexion.query(`INSERT INTO ${tabla}(id_caso,id_ciclo,estado) VALUES (?,?,?)`,[idCaso,idCiclo,estado] ,(error, result) => {
+            if(error) return reject(error);
+            resolve({idCaso:idCaso, idCiclo:idCiclo, estado:estado});
+        })
+    })
+}
+
+export function casoConCicloActualizar(tabla,idCaso, idCiclo, estado){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`UPDATE ${tabla} SET estado=? WHERE id_caso=? AND id_ciclo=?`,[idCaso,idCiclo,estado] ,(error, result) => {
+            if(error) return reject(error);
+            resolve({idCaso:idCaso, idCiclo:idCiclo, estado:estado});
+        })
+    })
+}
+
+export function casoConCicloEliminar(tabla,idCaso, idCiclo){
+    return new Promise( (resolve, reject) => {
+        conexion.query(`DELETE FROM ${tabla} WHERE id_caso=? AND id_ciclo=?`,[idCaso,idCiclo] ,(error, result) => {
             if(error) return reject(error);
             resolve({idCaso:idCaso, idCiclo:idCiclo});
         })

@@ -25,6 +25,21 @@ export function ciclosCasosByIdProyecto(tablaCS, idProyecto){
     })
 }
 
+export function ciclosCasosByIdCaso(tablaCS,tablar, idCaso){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT c.id, c.nombre, r.estado FROM ${tablaCS} as c
+                        JOIN ${tablar} as r ON c.id = r.id_ciclo
+                        WHERE r.id_caso = ?;`
+
+        conexion.query(querys, [idCaso], (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        })
+            
+    })
+}
+
 export function ciclosCasosById(tablaCS, idCiclo){
     return new Promise( (resolve, reject) => {
 

@@ -1,4 +1,11 @@
-import {crearCaso,casosByIdSet,casoById,actualizarCasoById, eliminarCasoById, ordenarCasoByIdSet, casoConCiclo, casosByIdSetPagina, casosByIdSetTotal} from '../models/casosModel.js';
+import {crearCaso,casosByIdSet,
+        casoById,actualizarCasoById, 
+        eliminarCasoById, ordenarCasoByIdSet, 
+        casoConCiclo, 
+        casosByIdSetPagina, 
+        casosByIdSetTotal,
+        casoConCicloActualizar,
+        casoConCicloEliminar} from '../models/casosModel.js';
 
 const TABLAS = 'caso_prueba';
 const TABLAR = "relacion_caso_ciclo";
@@ -113,17 +120,45 @@ export const ordenarCasos = async(req, res) => {
 
 export const vincularCasoConCiclo = async(req, res) => {
     try{
-        const { idCaso, idCiclo } = req.body;
+        const { idCaso, idCiclo, estado } = req.body;
 
-        if (!idCaso || !idCiclo) {
+        if (!idCaso || !idCiclo || !estado) {
             return res.status(400).json({ error: 'Faltan valores por ingresar' });
         }
 
-        const casoCiclo = await casoConCiclo(TABLAR,idCaso,idCiclo);
+        const casoCiclo = await casoConCiclo(TABLAR,idCaso,estado);
 
         res.status(201).json({mensaje: 'Caso de prueba vinculado con exito', caso: casoCiclo});
 
     }catch{
         res.status(500).json({ error: 'Error al vincular el caso de prueba al ciclo' });
+    }
+}
+
+export const vincularCasoConCicloActualizar = async(req, res) => {
+    try{
+        const { estado } = req.body;
+
+        if (!estado) {
+            return res.status(400).json({ error: 'Faltan valores por ingresar' });
+        }
+
+        const casoCiclo = await casoConCicloActualizar(TABLAR,estado, req.params.idCaso, req.params.idCiclo);
+
+        res.status(200).json({mensaje: 'vinculo del Caso de prueba actualizado con exito', caso: casoCiclo});
+
+    }catch{
+        res.status(500).json({ error: 'Error al vincular el caso de prueba al ciclo' });
+    }
+}
+
+export const vincularCasoConCicloEliminar = async(req, res) => {
+    try{
+        const casoCiclo = await casoConCicloEliminar(TABLAR, req.params.idCaso, req.params.idCiclo);
+
+        res.status(200).json({mensaje: 'vinculo del Caso de prueba eliminado con exito'});
+
+    }catch{
+        res.status(500).json({ error: 'Error al eliminar el vinculo del caso de prueba al ciclo' });
     }
 }
