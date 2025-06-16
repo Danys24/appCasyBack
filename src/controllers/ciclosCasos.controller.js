@@ -1,4 +1,11 @@
-import {crearCicloCasos, ciclosCasosByIdProyecto, ciclosCasosById, actualizarCiclosCasosById, eliminarCiclosCasosById, ciclosCasosByIdCaso} from '../models/cicloCasosModel.js';
+import {crearCicloCasos, 
+        ciclosCasosByIdProyecto, 
+        ciclosCasosById, 
+        actualizarCiclosCasosById, 
+        eliminarCiclosCasosById, 
+        ciclosCasosByIdCaso,
+        ciclosByIdProyectoPagina,
+        ciclosByIdProyectoTotal} from '../models/cicloCasosModel.js';
 
 const TABLAS = 'ciclo_caso';
 const TABLAP = 'proyectos';
@@ -56,6 +63,32 @@ export const obtenerCiclosCasosByIdCaso = async(req, res) => {
 
     }catch (error){
         console.error('Error al obtener los ciclos:', error);
+        res.status(500).json({ error: 'Error al obtener los ciclos' });
+    }
+}
+
+export const obtenerCiclosByIdProyectoPaginas = async(req, res) => {
+    try{
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const ciclos = await ciclosByIdProyectoPagina(TABLAS, req.params.id, limit, offset);
+
+        const totalCiclos = await ciclosByIdProyectoTotal(TABLAS, req.params.id);
+
+        const total = totalCiclos[0].total;
+
+
+        res.json({
+            data:ciclos,
+            total,
+            page,
+            limit
+        });
+
+    }catch(error){
+        console.error("error al obtener los ciclos", error);
         res.status(500).json({ error: 'Error al obtener los ciclos' });
     }
 }

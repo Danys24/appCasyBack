@@ -25,6 +25,32 @@ export function ciclosCasosByIdProyecto(tablaCS, idProyecto){
     })
 }
 
+export function ciclosByIdProyectoPagina(tabla, idProyecto, limit, offset){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT * FROM ${tabla}
+                        WHERE id_proyecto = ? ORDER BY id ASC LIMIT ? OFFSET ?                   
+                        `
+        conexion.query(querys,[idProyecto, limit, offset], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
+export function ciclosByIdProyectoTotal(tabla, idProyecto){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT COUNT(*) AS total FROM ${tabla}
+                        WHERE id_proyecto = ?                  
+                        `
+        conexion.query(querys,[idProyecto], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
 export function ciclosCasosByIdCaso(tablaCS,tablar, idCaso){
     return new Promise( (resolve, reject) => {
 

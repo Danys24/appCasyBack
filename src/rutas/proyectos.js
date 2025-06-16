@@ -1,7 +1,7 @@
 import express from 'express';
 import {crearProyectos,obtenerTodosProyectos,obtenerUnProyecto,actualizarUnProyecto,eliminarUnProyecto} from '../controllers/proyectos.controller.js';
 import {obtenerCiclosSetByIdProyecto} from '../controllers/ciclosSet.controller.js';
-import {obtenerCiclosCasosByIdProyecto} from '../controllers/ciclosCasos.controller.js';
+import {obtenerCiclosCasosByIdProyecto,obtenerCiclosByIdProyectoPaginas} from '../controllers/ciclosCasos.controller.js';
 import {obtenerSetsByIdProyecto, obtenerSetsByIdProyectoPaginas} from '../controllers/set.controller.js';
 import {usuarioByIdProyecto, usuarioByIdProyectoNoAsociados} from '../controllers/user.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
@@ -19,6 +19,9 @@ routerProyecto.get('/:id/ciclosSet',authMiddleware,obtenerCiclosSetByIdProyecto)
 
 //GET /Proyectos/:id/ciclosCasos - obtener los ciclos del caso por id del proyecto 
 routerProyecto.get('/:id/ciclosCasos',authMiddleware,obtenerCiclosCasosByIdProyecto);
+
+//GET /Proyectos/:id/ciclosCasosPaginado - obtener los ciclos del caso por id del proyecto en pagina 
+routerProyecto.get('/:id/ciclosCasosPaginado',authMiddleware,obtenerCiclosByIdProyectoPaginas);
 
 //GET /Proyectos/:id/sets - obtener los sets por id del proyecto 
 routerProyecto.get('/:id/sets',authMiddleware,obtenerSetsByIdProyecto);
