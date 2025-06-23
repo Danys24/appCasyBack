@@ -66,6 +66,21 @@ export function ciclosCasosByIdCaso(tablaCS,tablar, idCaso){
     })
 }
 
+export function ciclosCasosByIdCasoNoRelacionados(tablaCS,tablar, idCaso, idProyecto){
+    return new Promise( (resolve, reject) => {
+
+        const querys = `SELECT id, nombre FROM ${tablaCS}
+                        WHERE id NOT IN( SELECT id_ciclo FROM ${tablar} WHERE id_caso = ?) AND id_proyecto= ?
+                        `
+
+        conexion.query(querys, [idCaso, idProyecto], (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        })
+            
+    })
+}
+
 export function ciclosCasosById(tablaCS, idCiclo){
     return new Promise( (resolve, reject) => {
 

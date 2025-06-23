@@ -1,7 +1,7 @@
 import express from 'express';
 import {crearProyectos,obtenerTodosProyectos,obtenerUnProyecto,actualizarUnProyecto,eliminarUnProyecto} from '../controllers/proyectos.controller.js';
 import {obtenerCiclosSetByIdProyecto} from '../controllers/ciclosSet.controller.js';
-import {obtenerCiclosCasosByIdProyecto,obtenerCiclosByIdProyectoPaginas} from '../controllers/ciclosCasos.controller.js';
+import {obtenerCiclosCasosByIdProyecto,obtenerCiclosByIdProyectoPaginas,obtenerCiclosCasosByIdCasoNoRelacionados} from '../controllers/ciclosCasos.controller.js';
 import {obtenerSetsByIdProyecto, obtenerSetsByIdProyectoPaginas} from '../controllers/set.controller.js';
 import {usuarioByIdProyecto, usuarioByIdProyectoNoAsociados} from '../controllers/user.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
@@ -34,6 +34,9 @@ routerProyecto.get('/:id/usuarios',authMiddleware,usuarioByIdProyecto);
 
 //GET /Proyectos/:id/usuarios - obtener los usuarios no asociados al id del proyecto 
 routerProyecto.get('/:id/usuariosNoAsociados',authMiddleware,usuarioByIdProyectoNoAsociados);
+
+//GET /Proyectos/:idProyecto/casos/:id/ciclosNoVinculados - obtener los ciclos no asociados con los casos por id proyecto 
+routerProyecto.get('/:idProyecto/casos/:id/ciclosNoVinculados',authMiddleware,obtenerCiclosCasosByIdCasoNoRelacionados);
 
 //GET /proyectos/:id - obtener un proyecto por id
 routerProyecto.get('/:id',authMiddleware,obtenerUnProyecto);

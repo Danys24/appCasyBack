@@ -1,7 +1,7 @@
 import express from 'express';
 import {crearCasoPrueba, obtenerUnCaso, actualizarUnCaso, eliminarUnCaso, vincularCasoConCiclo,vincularCasoConCicloActualizar,vincularCasoConCicloEliminar} from '../controllers/casos.controller.js';
 import {obtenerPasosByIdCasos, ordenarPasos} from '../controllers/pasos.controller.js';
-import {obtenerCiclosCasosByIdCaso} from '../controllers/ciclosCasos.controller.js';
+import {obtenerCiclosCasosByIdCaso,obtenerCiclosCasosByIdCasoNoRelacionados} from '../controllers/ciclosCasos.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
 
 const routerCasos = express.Router();
@@ -14,6 +14,9 @@ routerCasos.get('/:id/pasos',authMiddleware,obtenerPasosByIdCasos);
 
 //GET /casos/:id/ciclos - obtener ciclos por id caso
 routerCasos.get('/:id/ciclos',authMiddleware,obtenerCiclosCasosByIdCaso);
+
+//GET /casos/:id/ciclosNoRelacionados - obtener ciclos por id caso no relacionados
+routerCasos.get('/:id/ciclosNoRelacionados',authMiddleware,obtenerCiclosCasosByIdCasoNoRelacionados);
 
 //PUT /casos/:id/pasos - ordenar pasos por id caso
 routerCasos.put('/:id/pasos',authMiddleware,ordenarPasos);
@@ -28,13 +31,13 @@ routerCasos.put('/:id',authMiddleware,actualizarUnCaso);
 routerCasos.delete('/:id',authMiddleware,eliminarUnCaso);
 
 //POST /vicularCasosCiclo - vincular el caso al ciclo
-routerCasos.post('/vicularCasosCiclo',authMiddleware,vincularCasoConCiclo);
+routerCasos.post('/vincularCasosCiclo',authMiddleware,vincularCasoConCiclo);
 
 //PUT /:idCaso/vicularCasosCiclo/:idCiclo - actualizar el vinculo del caso al ciclo
-routerCasos.put('/vicularCasosCiclo',authMiddleware,vincularCasoConCicloActualizar);
+routerCasos.put('/:idCaso/vicularCasosCiclo/:idCiclo',authMiddleware,vincularCasoConCicloActualizar);
 
 //DELETE /:idCaso/vicularCasosCiclo/:idCiclo - eliminar el vinculo del caso al ciclo
-routerCasos.delete('/vicularCasosCiclo',authMiddleware,vincularCasoConCicloEliminar);
+routerCasos.delete('/:idCaso/vicularCasosCiclo/:idCiclo',authMiddleware,vincularCasoConCicloEliminar);
 
 
 export default routerCasos;

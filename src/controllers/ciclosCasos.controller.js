@@ -5,7 +5,8 @@ import {crearCicloCasos,
         eliminarCiclosCasosById, 
         ciclosCasosByIdCaso,
         ciclosByIdProyectoPagina,
-        ciclosByIdProyectoTotal} from '../models/cicloCasosModel.js';
+        ciclosByIdProyectoTotal,
+        ciclosCasosByIdCasoNoRelacionados} from '../models/cicloCasosModel.js';
 
 const TABLAS = 'ciclo_caso';
 const TABLAP = 'proyectos';
@@ -54,6 +55,23 @@ export const obtenerCiclosCasosByIdCaso = async(req, res) => {
 
     try{
         const ciclo = await ciclosCasosByIdCaso(TABLAS,TABLAR,req.params.id);
+
+        if (ciclo.length === 0) {
+            return res.status(404).json({ error: 'Ciclos no encontrados' });
+        }
+
+        res.json(ciclo);
+
+    }catch (error){
+        console.error('Error al obtener los ciclos:', error);
+        res.status(500).json({ error: 'Error al obtener los ciclos' });
+    }
+}
+
+export const obtenerCiclosCasosByIdCasoNoRelacionados = async(req, res) => {
+
+    try{
+        const ciclo = await ciclosCasosByIdCasoNoRelacionados(TABLAS,TABLAR,req.params.id,req.params.idProyecto);
 
         if (ciclo.length === 0) {
             return res.status(404).json({ error: 'Ciclos no encontrados' });

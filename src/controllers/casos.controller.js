@@ -126,11 +126,12 @@ export const vincularCasoConCiclo = async(req, res) => {
             return res.status(400).json({ error: 'Faltan valores por ingresar' });
         }
 
-        const casoCiclo = await casoConCiclo(TABLAR,idCaso,estado);
+        const casoCiclo = await casoConCiclo(TABLAR,idCaso,idCiclo,estado);
 
         res.status(201).json({mensaje: 'Caso de prueba vinculado con exito', caso: casoCiclo});
 
-    }catch{
+    }catch(err){
+        console.error(err)
         res.status(500).json({ error: 'Error al vincular el caso de prueba al ciclo' });
     }
 }

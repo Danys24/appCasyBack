@@ -5,7 +5,8 @@ import {authMiddleware} from '../middlewares/authmiddleware.js';
 
 const routerResultados = express.Router();
 
-//POST /resultados - crear un paso de prueba
+
+//POST /resultados - crear resultado
 routerResultados.post('/',authMiddleware,upload.array('imagenes', 5),crearResultadoPrueba);
 
 //GET /resultados/:id - obtener un resultado por id
