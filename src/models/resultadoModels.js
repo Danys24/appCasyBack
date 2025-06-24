@@ -1,11 +1,11 @@
 import {conexion} from '../config/db.js';
 
-export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evidencia, estado){
+export function crearResultado(tablas, tablae, idPaso, idCiclo, idCaso, observacion, evidencia, estado){
 
     return new Promise((resolve, reject) =>{
         
-        conexion.query(`INSERT INTO ${tablas}(id_paso, id_ciclo, observacion, estado) VALUES(?,?,?,?)`, 
-            [idPaso, idCiclo, observacion,estado], 
+        conexion.query(`INSERT INTO ${tablas}(id_paso, id_ciclo, idCaso, observacion, estado) VALUES(?,?,?,?,?)`, 
+            [idPaso, idCiclo, idCaso, observacion,estado], 
             (error, result) => {
 
                 if(error) return reject(error);
@@ -20,8 +20,9 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, observacion, evi
                             resolve({
                                 idPaso:idPaso,
                                 idCiclo:idCiclo,
+                                idCaso:idCaso,
                                 observacion:observacion,
-                                estado, estado
+                                estado: estado
                             })
                         }
                     )
@@ -39,6 +40,20 @@ export function resultsByIdPasoCiclo(tabla,tablae, idpaso, idCiclo){
                         WHERE id_paso= ? AND id_ciclo= ?
                         GROUP BY r.id`
         conexion.query(querys,[idpaso, idCiclo], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
+export function resultsByIdCasoCiclo(tabla,tablae, idCaso, idCiclo){
+    return new Promise( (resolve, reject) => {
+        const querys = `SELECT r.observacion,JSON_ARRAYAGG(e.evidencia) as evidencia,r.estado 
+                        FROM ${tabla} as r 
+                        LEFT JOIN ${tablae} as e ON r.id = e.id_resultado
+                        WHERE id_caso= ? AND id_ciclo= ?
+                        GROUP BY r.id`
+        conexion.query(querys,[idCaso, idCiclo], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })

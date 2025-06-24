@@ -1,18 +1,24 @@
-import {crearResultado, actualizarResultadoById, resultadoById, resultsByIdPasoCiclo, eliminarEvidenciaById, crearEvidencia } from '../models/resultadoModels.js';
+import {crearResultado, 
+        actualizarResultadoById, 
+        resultadoById, 
+        resultsByIdPasoCiclo, 
+        eliminarEvidenciaById, 
+        crearEvidencia,
+        resultsByIdCasoCiclo } from '../models/resultadoModels.js';
 
 const TABLAS = 'resultado_paso_prueba';
 const TABLAE = "evidencias";
 
 export const crearResultadoPrueba = async(req, res) => {
     try{
-        const { idPaso, idCiclo, observacion, estado } = req.body;
+        const { idPaso, idCiclo, idCaso ,observacion, estado } = req.body;
         const imagenes = req.files; //Array de archivos
 
-        if (!idPaso || !idCiclo || !observacion || !estado) {
+        if (!idPaso || !idCiclo || !idCaso || !observacion || !estado) {
             return res.status(400).json({ error: 'Faltan valores por ingresar' });
         }
 
-        const resultado = await crearResultado(TABLAS,TABLAE, idPaso, idCiclo, observacion, imagenes,estado);
+        const resultado = await crearResultado(TABLAS,TABLAE, idPaso, idCiclo,idCaso, observacion, imagenes,estado);
 
         if (!resultado) {
             //return res.status(401).json({ error: 'El set no se ha creado' });
@@ -51,7 +57,37 @@ export const obtenerResultadosByIdPasoCiclo = async(req, res) => {
         }));
         res.json(datosConURL);
     }catch(error){
-        console.error('Error al crear el resultado:', error);
+        console.error('Error al obtener el resultado:', error);
+        res.status(500).json({ error: 'Error al obtener los resultados de prueba' });
+    }
+}
+
+export const obtenerResultadosByIdCasoCiclo = async(req, res) => {
+
+    const obtenerUrl = (evidendia) => {
+        const urlEvidencia = [];
+        for(const evi of evidendia){
+            urlEvidencia.push(`http://localhost:3000/imagenes/${evi}`);
+        }
+        return urlEvidencia
+    }
+    
+    try{
+        const resultado = await resultsByIdCasoCiclo(TABLAS,TABLAE, req.params.idCaso, req.params.idCiclo);
+
+        if(resultado.length === 0){
+            return res.status(404).json({mensaje:"no se encuntraron resultados"})
+        }
+
+        const datosConURL = resultado.map(r => ({
+            ...r,
+            url_evidencia: r.evidencia
+                ? obtenerUrl(r.evidencia)
+                : null
+        }));
+        res.json(datosConURL);
+    }catch(error){
+        console.error('Error al obtener el resultado:', error);
         res.status(500).json({ error: 'Error al obtener los resultados de prueba' });
     }
 }
