@@ -1,10 +1,10 @@
 import {conexion} from '../config/db.js';
 
-export function crearResultado(tablas, tablae, idPaso, idCiclo, idCaso, observacion, evidencia, estado){
+export function crearResultadoConEvidencia(tablas, tablae, idPaso, idCiclo, idCaso, observacion, evidencia, estado){
 
     return new Promise((resolve, reject) =>{
         
-        conexion.query(`INSERT INTO ${tablas}(id_paso, id_ciclo, idCaso, observacion, estado) VALUES(?,?,?,?,?)`, 
+        conexion.query(`INSERT INTO ${tablas}(id_paso, id_ciclo, id_caso, observacion, estado) VALUES(?,?,?,?,?)`, 
             [idPaso, idCiclo, idCaso, observacion,estado], 
             (error, result) => {
 
@@ -32,6 +32,32 @@ export function crearResultado(tablas, tablae, idPaso, idCiclo, idCaso, observac
     })
 }
 
+export function crearResultado(tablas, idPaso, idCiclo, idCaso, observacion, estado){
+
+    return new Promise((resolve, reject) =>{
+
+        const querys = `
+            INSERT INTO ${tablas}(id_paso, id_ciclo, id_caso, observacion, estado) VALUES(?,?,?,?,?)
+        `
+        
+        conexion.query(querys, 
+            [idPaso, idCiclo, idCaso, observacion,estado], 
+            (error, result) => {
+
+                if(error) return reject(error);
+
+                resolve({
+                    idPaso:idPaso,
+                    idCiclo:idCiclo,
+                    idCaso:idCaso,
+                    observacion:observacion,
+                    estado: estado
+                })
+            }
+        )
+    })
+}
+
 export function resultsByIdPasoCiclo(tabla,tablae, idpaso, idCiclo){
     return new Promise( (resolve, reject) => {
         const querys = `SELECT r.observacion,JSON_ARRAYAGG(e.evidencia) as evidencia,r.estado 
@@ -46,14 +72,14 @@ export function resultsByIdPasoCiclo(tabla,tablae, idpaso, idCiclo){
     })
 }
 
-export function resultsByIdCasoCiclo(tabla,tablae, idCaso, idCiclo){
+export function resultsByIdCasoCiclo(tablas,tablar,tablap, idCaso, idCiclo){
     return new Promise( (resolve, reject) => {
-        const querys = `SELECT r.observacion,JSON_ARRAYAGG(e.evidencia) as evidencia,r.estado 
-                        FROM ${tabla} as r 
-                        LEFT JOIN ${tablae} as e ON r.id = e.id_resultado
-                        WHERE id_caso= ? AND id_ciclo= ?
-                        GROUP BY r.id`
-        conexion.query(querys,[idCaso, idCiclo], (error, result) => {
+        const querys = `
+            SELECT p.id, p.paso, p.resultado, p.orden, r.id as id_resultado, r.observacion, r.estado FROM ${tablap} as p
+            LEFT JOIN ${tablas} as r ON p.id = r.id_paso AND r.id_ciclo = ?
+            WHERE p.id_caso = ? 
+        `
+        conexion.query(querys,[idCiclo,idCaso], (error, result) => {
             if(error) return reject(error);
             resolve(result);
         })

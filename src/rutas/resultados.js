@@ -7,7 +7,7 @@ const routerResultados = express.Router();
 
 
 //POST /resultados - crear resultado
-routerResultados.post('/',authMiddleware,upload.array('imagenes', 5),crearResultadoPrueba);
+routerResultados.post('/',authMiddleware,crearResultadoPrueba);
 
 //GET /resultados/:id - obtener un resultado por id
 routerResultados.get('/:id',authMiddleware,obtenerUnResultado);
