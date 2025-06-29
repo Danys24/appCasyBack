@@ -4,7 +4,8 @@ import {crearResultado,
         resultsByIdPasoCiclo, 
         eliminarEvidenciaById, 
         crearEvidencia,
-        resultsByIdCasoCiclo } from '../models/resultadoModels.js';
+        resultsByIdCasoCiclo,
+        evidenciasByIdResultado } from '../models/resultadoModels.js';
 
 const TABLAS = 'resultado_paso_prueba';
 const TABLAE = "evidencias";
@@ -123,6 +124,38 @@ export const crearEvidencias = async(req, res) => {
     }catch(error){
         console.error("Error al crear evidencia",error);
         res.status(500).json({ error: 'Error al crear la evidencia de prueba' });
+    }
+}
+
+export const obtenerEvidenciaPorIdResultado = async(req, res) => {
+    
+    try{
+        const obtenerUrl = (evidencia) => {
+            const urlEvidencia = [];
+            for(const evi of evidencia){
+                urlEvidencia.push(`http://localhost:3000/imagenes/${evi}`);
+            }
+            return urlEvidencia
+        }
+
+        const resultado = await evidenciasByIdResultado(TABLAE, req.params.idResultado);
+
+        if(resultado.length === 0){
+            return res.status(404).json({mensaje:"no se encuntraron evidencias"})
+        }
+
+        const datosConURL = resultado.map(r => ({
+            ...r,
+            url_evidencia: r.evidencia
+                ? obtenerUrl(r.evidencia)
+                : null
+        }));
+
+        res.json(datosConURL);
+
+    }catch(error){
+        console.error('Error al obtener la evidencia:', error);
+        res.status(500).json({ error: 'Error al obtener las evidencias' });
     }
 }
 

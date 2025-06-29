@@ -126,6 +126,19 @@ export function crearEvidencia(tablae,idResultado, evidencia){
     })
 }
 
+export function evidenciasByIdResultado(tablae, idResultado){
+    return new Promise( (resolve, reject) => {
+        const querys = `SELECT id, id_resultado, JSON_ARRAYAGG(evidencia) as evidencia
+                        FROM ${tablae} 
+                        WHERE id_resultado = ?
+                        GROUP BY id`
+        conexion.query(querys,[idResultado], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
 export function eliminarEvidenciaById(tablae,idEvidencia){
     return new Promise( (resolve, reject) => {
         conexion.query(`DELETE FROM ${tablae}  WHERE id=?`,
