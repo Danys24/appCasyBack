@@ -2,7 +2,7 @@ import express from 'express';
 import {crearCasoPrueba, obtenerUnCaso, actualizarUnCaso, eliminarUnCaso, vincularCasoConCiclo,vincularCasoConCicloActualizar,vincularCasoConCicloEliminar} from '../controllers/casos.controller.js';
 import {obtenerPasosByIdCasos, ordenarPasos} from '../controllers/pasos.controller.js';
 import {obtenerCiclosCasosByIdCaso,obtenerCiclosCasosByIdCasoNoRelacionados} from '../controllers/ciclosCasos.controller.js';
-import {obtenerResultadosByIdCasoCiclo} from '../controllers/resultado.controller.js';
+import {obtenerResultadosByIdCasoCiclo, obtenerEvidenciaPorIdCasoCiclo} from '../controllers/resultado.controller.js';
 import {authMiddleware} from '../middlewares/authmiddleware.js';
 
 const routerCasos = express.Router();
@@ -18,6 +18,9 @@ routerCasos.get('/:id/ciclos',authMiddleware,obtenerCiclosCasosByIdCaso);
 
 //GET /casos/:idCaso/ciclos/:idCiclo/resultados - obtener resultados por id ciclos e id caso
 routerCasos.get('/:idCaso/ciclos/:idCiclo/resultados',authMiddleware,obtenerResultadosByIdCasoCiclo);
+
+//GET /casos/:idCaso/ciclos/:idCiclo/evidencias - obtener resultados por id ciclos e id caso
+routerCasos.get('/:idCaso/ciclos/:idCiclo/evidencia',authMiddleware,obtenerEvidenciaPorIdCasoCiclo);
 
 //GET /casos/:id/ciclosNoRelacionados - obtener ciclos por id caso no relacionados
 routerCasos.get('/:id/ciclosNoRelacionados',authMiddleware,obtenerCiclosCasosByIdCasoNoRelacionados);

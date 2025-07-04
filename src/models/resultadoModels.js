@@ -139,6 +139,20 @@ export function evidenciasByIdResultado(tablae, idResultado){
     })
 }
 
+export function evidenciasByIdCasoCiclo(tablas,tablae, idCaso, idCiclo){
+    return new Promise( (resolve, reject) => {
+        const querys = `SELECT JSON_ARRAYAGG(evidencia) as evidencia FROM ${tablas} as r
+                        JOIN ${tablae} as e ON r.id = e.id_resultado
+                        WHERE id_caso = ? AND id_ciclo = ?
+                        `
+        conexion.query(querys,[idCaso, idCiclo], (error, result) => {
+            if(error) return reject(error);
+            resolve(result);
+        })
+    })
+}
+
+
 export function eliminarEvidenciaById(tablae,idEvidencia){
     return new Promise( (resolve, reject) => {
         conexion.query(`DELETE FROM ${tablae}  WHERE id=?`,
